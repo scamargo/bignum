@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "libft.h"
 
+char	*add_bignum(char *num1, int len1, char *num2, int len2);
+
 void	print_bignum(t_array *num, int size)
 {
 	while (--size >= 0)
@@ -58,7 +60,27 @@ void	trim_trailing_zeroes(char *num)
 		++len;
 	num[++len] = '\0';
 }
-	
+
+int	carry_the_one(char *num, int initial_index, int factor)
+{
+	int index;
+   
+	index = initial_index;
+	while (index > 0)
+	{
+		if (num[index - 1] != '0')
+		{
+			num[index - 1] -= 1;
+			while (index < initial_index)
+				num[index++] = '9';
+			return factor + 10;
+		}
+		index--;
+	}
+	ft_putendl("you screwed you up big time!! carry_the_one() not working");
+	return (0);
+}
+
 char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 {
 	char	*result;
@@ -68,6 +90,14 @@ char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 	int		fac1;
 	int		fac2;
 	
+	//TODO: handle two negative nums
+	//if (num1[0] == '-' && num2[0] == '-')
+	//	return add_bignum(++num1, --len1, ++num2, --len2);
+	//TODO: handle only one negative num
+	/*if (num1[0] == '-' && num2[0] != '-')
+		return add_bignum(++num1, --len1, num2, len2);
+	if (num2[0] == '-')
+		return add_bignum(++num2, --len2, num1, len1);*/
 	if (!(char_arr = init_bignum("", len1)))
 		return (0);
 	if ((is_second_bigger = second_is_bigger(num2, len2, num1, len1)))
@@ -79,25 +109,24 @@ char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 		len1 = len2;
 		len2 = fac1;
 	}
-	//SUBTRACT
 	len1--;
 	len2--;
 	while (len1 >= 0 || len2 >= 0)
 	{
 		fac1 = (len1 < 0) ? 0 : num1[len1] - '0';
-		//printf("fac1: %d\n", fac1);
+		printf("fac1: %d\n", fac1);
 		fac2 = (len2 < 0) ? 0 : num2[len2] - '0';
-		//printf("fac2: %d\n", fac2);
+		printf("len2: %d\n", len2);
+		printf("fac2: %d\n", fac2);
+		fac1 = (fac1 < fac2) ? carry_the_one(num1, len1, fac1) : fac1; 
 		fac1 -= fac2;
 		arr_insert(char_arr, fac1 + '0');
 		len1--;
 		len2--;
 	}
-	//END SUBTRACT
 	if (is_second_bigger)
 		arr_insert(char_arr, '-');
 	arr_insert(char_arr, '\0');
-	// TODO: trim trailing zeroes
 	trim_trailing_zeroes(char_arr->str);
 	ft_strrev(char_arr->str);
 	result = char_arr->str;
@@ -112,9 +141,13 @@ char *add_bignum(char *num1, int len1, char *num2, int len2)
 	int		carry;
 	int		fac1;
 	int		fac2;
+	int		factors_neg;
 
 	if (!(char_arr = init_bignum("", len1)))
 		return (0);
+	/*factors_neg = (num1[0] == '-' && num2[0] == '-') ? 1 : 0;
+	if (num1[0] == '-' | num2[0] == '-')
+		return (num1[0] == '-') ? subtract_bignum(num2, len2, num1, len1) : subtract_bignum(num1, len1, num2, len2);*/
 	carry = 0;
 	len1--;
 	len2--;
