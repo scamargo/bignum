@@ -1,0 +1,56 @@
+echo "SUBTRACTION"
+echo
+
+echo "5 - 5:"
+echo "EXPECTED: 0"
+echo "RECEIVED: "
+./a.out 5 5
+echo
+
+echo "100 - 100"
+echo "EXPECTED: 0"
+echo "RECEIVED: "
+./a.out 100 100
+echo
+
+echo "9-3:"
+echo "EXPECTED: 6"
+echo "RECEIVED: "
+./a.out 9 3
+echo
+
+echo "45-43:"
+echo "EXPECTED: 2"
+echo "RECEIVED: "
+./a.out 45 43
+echo
+
+echo "1003-2:"
+echo "EXPECTED: 1001"
+echo "RECEIVED: "
+./a.out 1003 2
+echo
+
+echo "0-3:"
+echo "EXPECTED: -3"
+echo "RECEIVED: "
+./a.out "0" "3"
+echo
+
+echo "43-45"
+echo "EXPECTED: -2"
+echo "RECEIVED: "
+./a.out 43 45
+echo
+
+echo "2 - 1003:"
+echo "EXPECTED: -1001"
+echo "RECEIVED: "
+./a.out 2 1003
+echo
+
+echo "10 - 3:"
+echo "EXPECTED: 7"
+echo "RECEIVED: "
+./a.out 10 3
+echo
