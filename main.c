@@ -81,6 +81,29 @@ int	carry_the_one(char *num, int initial_index, int factor)
 	return (0);
 }
 
+// TODO: test this shit
+char *convert_to_neg(char *num, int len)
+{
+	//t_array	*char_arr;
+	char	*result;
+	int		i;
+	int		j;
+	
+	if (!(result = ft_memalloc(len + 2)))
+		return (0);
+	i = 0;
+	j = 0;
+	result[i++] = '-';
+	while (i < len + 1)
+	{
+		result[i] = num[j];
+		i++;
+		j++;
+	}
+	result[i] = '\0';
+	return (result);
+}
+
 char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 {
 	char	*result;
@@ -90,14 +113,12 @@ char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 	int		fac1;
 	int		fac2;
 	
-	//TODO: handle two negative nums
-	//if (num1[0] == '-' && num2[0] == '-')
-	//	return add_bignum(++num1, --len1, ++num2, --len2);
-	//TODO: handle only one negative num
-	/*if (num1[0] == '-' && num2[0] != '-')
-		return add_bignum(++num1, --len1, num2, len2);
-	if (num2[0] == '-')
-		return add_bignum(++num2, --len2, num1, len1);*/
+	if (num1[0] == '-' && num2[0] == '-')
+		return subtract_bignum(++num1, --len1, ++num2, --len2);
+	else if (num1[0] == '-' && num2[0] != '-') // TODO: protect call to convert_to_neg
+		return add_bignum(num1, len1, convert_to_neg(num2, len2), len2 + 1);
+	else if (num2[0] == '-' && num1[0] != '-')
+		return add_bignum(++num2, --len2, num1, len1);
 	if (!(char_arr = init_bignum("", len1)))
 		return (0);
 	if ((is_second_bigger = second_is_bigger(num2, len2, num1, len1)))
@@ -114,10 +135,9 @@ char *subtract_bignum(char *num1, int len1, char *num2, int len2)
 	while (len1 >= 0 || len2 >= 0)
 	{
 		fac1 = (len1 < 0) ? 0 : num1[len1] - '0';
-		printf("fac1: %d\n", fac1);
+		//printf("fac1: %d\n", fac1);
 		fac2 = (len2 < 0) ? 0 : num2[len2] - '0';
-		printf("len2: %d\n", len2);
-		printf("fac2: %d\n", fac2);
+		//printf("fac2: %d\n", fac2);
 		fac1 = (fac1 < fac2) ? carry_the_one(num1, len1, fac1) : fac1; 
 		fac1 -= fac2;
 		arr_insert(char_arr, fac1 + '0');
@@ -145,9 +165,18 @@ char *add_bignum(char *num1, int len1, char *num2, int len2)
 
 	if (!(char_arr = init_bignum("", len1)))
 		return (0);
-	/*factors_neg = (num1[0] == '-' && num2[0] == '-') ? 1 : 0;
+	/* NEG FACTORS FUNC */
+	factors_neg = (num1[0] == '-' && num2[0] == '-') ? 1 : 0;
+	if (factors_neg)
+	{
+		++num1;
+		--len1;
+		++num2;
+		--len2;
+	}
+	/* NEG FACTORS FUNC */
 	if (num1[0] == '-' | num2[0] == '-')
-		return (num1[0] == '-') ? subtract_bignum(num2, len2, num1, len1) : subtract_bignum(num1, len1, num2, len2);*/
+		return (num1[0] == '-') ? subtract_bignum(num2, len2, ++num1, --len1) : subtract_bignum(num1, len1, ++num2, --len2);
 	carry = 0;
 	len1--;
 	len2--;
@@ -161,6 +190,8 @@ char *add_bignum(char *num1, int len1, char *num2, int len2)
 		len1--;
 		len2--;
 	}
+	if (factors_neg)
+		arr_insert(char_arr, '-');
 	arr_insert(char_arr, '\0');
 	ft_strrev(char_arr->str);
 	result = char_arr->str;
@@ -171,12 +202,23 @@ char *add_bignum(char *num1, int len1, char *num2, int len2)
 int main(int ac, char **av)
 {
    	char *result;
+	if (ac != 4)
+	{
+		ft_putendl("wrong number of inputs");
+		return (1);
+	}
 	char *str1 = av[1];
 	char *str2 = av[2];
+	char *operator = av[3];
 	int len1 = ft_strlen(str1);
 	int len2 = ft_strlen(str2);
 
-	result = subtract_bignum(str1, len1, str2, len2);
+	if (operator[0] == '-')
+		result = subtract_bignum(str1, len1, str2, len2);
+	else if (operator[0] == '+')
+		result = add_bignum(str1, len1, str2, len2);
+	else
+		ft_putendl("invalid operator");
 	ft_putendl(result);
 	
 	return 0;
